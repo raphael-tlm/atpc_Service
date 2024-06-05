@@ -7,7 +7,7 @@ Discussion(Ticket) and information Website
 
 [![Static Badge](https://img.shields.io/badge/Made%20By-R%C3%A0f-blue?style=for-the-badge&labelColor=white&color=purple)](https://github.com/raphael-tlm)
 [![Static Badge](https://img.shields.io/badge/Made%20For-ATPC-blue?style=for-the-badge&labelColor=black&color=lime&link=https%3A%2F%2Fatpc.ovh%2F)](https://atpc.ovh)
-![Static Badge](https://img.shields.io/badge/0.0-blue?style=for-the-badge&logo=git&logoSize=auto&labelColor=white&color=white)
+![Static Badge](https://img.shields.io/badge/0.7-blue?style=for-the-badge&logo=git&logoSize=auto&labelColor=white&color=white)
 
 </center>
 
