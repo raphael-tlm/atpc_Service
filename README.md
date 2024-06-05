@@ -20,6 +20,7 @@ It allows employe (user) to connect or register in and create discussion channel
 The Admin can display information message to the users' home page and create discussion channel with specific group and/or employe(s)
 
 > 📣 All the design are toward [ATPC](https://atpc.ov)
+
 > 🪛 The app is create to work on local server
 
 ## Used Dependency 
