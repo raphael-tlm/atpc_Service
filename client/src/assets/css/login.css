@@ -91,6 +91,6 @@
     }
 }
 
-.login-page .animation{
+.login-page .transition{
     animation: lgnPage-transition 1s;
 }

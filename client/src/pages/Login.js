@@ -42,18 +42,25 @@ export default function Login(){
         }
     }
 
+    function transition(){
+        const form = document.querySelector('.login-form');
+        document.querySelector('.img-login').style.zIndex = '1';
+        form.style.zIndex = '0';
+        form.classList.add('transition');
+    }
+
     return (
         <div className="login-page">
             <div className="main-content">
-                <img src={require('../assets/images/logo.png')}/>
+                <img className='img-login' src={require('../assets/images/logo.png')}/>
                 <form className="login-form">
                     <Input style="login" placeholder="monMail@atpc.asso.fr" label="Entrez votre E-Mail :" value={mail} change={(e) => setMail(e.target.value)} type='text'/>
                     <Input style="login" placeholder="monMotDePasseIci" label="Entrez votre mot de passe :" value={password} change={(i) => setPassword(i.target.value)} type='password'/>
                     <Button click={() => handleLogin()} style="login">Se connecter</Button>
                     <Link to="/forgotPWD" style="login">Mot de passe oublié</Link>
                     <Aside style="login">
-                        <Button click={() => console.log('wip')} style="login">
-                            <Link to="/register" style="login">S'inscrire</Link>    
+                        <Button click={() => transition()} style="login">
+                            <Link to="" style="login">S'inscrire</Link>    
                         </Button> 
                     </Aside>
                 </form>
