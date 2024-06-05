@@ -1,0 +1,117 @@
+.register-page .main-content{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    
+    height: 100vh;
+
+    background-color: #FFFFFF;
+}
+
+.register-page .main-content .img-register {
+    width: 500px;
+}
+
+.register-page .register-form{
+    width: 590px;
+    height: 590px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+    justify-content: space-evenly;
+
+    background-color: #14A33A;
+    color:#FFFFFF;
+
+    border-radius: 30px;
+
+    padding: 45px;
+
+    font-size: 30px;
+    font-family: 'Inter' sans-serif;
+}
+
+.register-page .register-form div {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.register-page .register-form div div{
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+}
+
+.register-page .register-form .input-register{
+    width: 500px;
+    height: 65px;
+
+    padding: 20px;
+
+    border: none;
+    border-radius: 60px;
+
+    font-size: 30px;
+}
+
+.register-page .register-form div div .input-register{
+    width: 243px;
+}
+
+.register-page .register-form .input-register:focus{
+    outline: none;
+}
+
+.register-page .register-form .button-register{
+    width: 500px;
+    height: 65px;
+
+    border:none;
+    border-radius: 60px;
+
+    background-color: #3E3573;
+    color:#FFFFFF;
+
+    font-size: 30px;
+}
+.register-page .register-form .button-register:hover{
+    background-color: #2e2858;
+    color:#FFFFFF;
+    cursor: pointer;
+}
+
+.register-page .register-form .aside-register{
+    width: 100%;
+}
+
+.register-page .register-form .aside-register .button-register{
+    width: 250px;
+    margin-left: auto;
+}
+
+.register-page .register-form a{
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+.register-page .register-form .button-register a {
+    width: 250px;
+    padding: 15px 35px;
+}
+
+@keyframes move-right{
+    from{
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+    to{
+        transform: translateX(800px) scale(0.5);
+        opacity: 0;
+    }
+}
+
+.register-page .animation{
+    animation: move-right 1s;
+}

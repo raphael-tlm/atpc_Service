@@ -84,6 +84,20 @@ app.get('/TryLogin', (req, res) => {
     });
 });
 
+app.get('/TryRegister', (req, res) => {
+    const mail = req.query.mail;
+    const password = jwt.sign(req.query.password, secret);
+    const prenom = req.query.prenom;
+    const nom = req.query.nom;
+    const sql = 'INSERT INTO utilisateurs (Nom, Prenom, Mail, Mot_De_Passe) VALUES (?, ?, ?, ?)';
+    db.query(sql, [nom , prenom, mail, password], (err, result) => {
+        if(err){
+            res.send({err: err});
+        }
+        res.send({token: jwt.sign({mail: mail}, secret, { expiresIn: 60 * 35 }), id : result.insertId, statut : jwt.sign(0, prenom+nom+mail+result.insertId+secret)});
+    });
+});
+
 app.listen(7596, () => {
     console.log('Server running on port 7596');
 });

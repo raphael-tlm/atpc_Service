@@ -15,30 +15,27 @@ export default function Login(){
 
     //seting the token in the local storage
     function handleLogin(){
-        if(mail === ''){
-            alert('Veuillez entrer un mail');
-        } 
-        else{
-            if(password === ''){
-                alert('Veuillez entrer un mot de passe');
-            }
-            else{
-                fetch('http://localhost:7596/TryLogin?mail=' + mail + '&password=' + password)
-                .then(response => response.json())
-                .then(data => {
-                    if(data.token){
-                        localStorage.setItem('token', data.token);
-                        localStorage.setItem('mail', mail);
-                        localStorage.setItem('prenom', data.prenom);
-                        localStorage.setItem('nom', data.nom);
-                        localStorage.setItem('id', data.id);
-                        localStorage.setItem('statut', data.statut);
-                        window.location.href = '/';
-                    } else {
-                        alert(data.message || data.err || 'Erreur inconnue');
-                    }
-                });
-            }
+        try{
+            if(mail === '') throw 'Veuillez entrer un mail';
+            if(password === '') throw 'Veuillez entrer un mot de passe';
+            fetch('http://localhost:7596/TryLogin?mail=' + mail + '&password=' + password)
+            .then(response => response.json())
+            .then(data => {
+                if(data.token){
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('mail', mail);
+                    localStorage.setItem('prenom', data.prenom);
+                    localStorage.setItem('nom', data.nom);
+                    localStorage.setItem('id', data.id);
+                    localStorage.setItem('statut', data.statut);
+                    window.location.href = '/';
+                } else {
+                    alert(data.message || data.err || 'Erreur inconnue');
+                }
+            });
+        }
+        catch(e){
+            alert(e);
         }
     }
 
@@ -60,7 +57,7 @@ export default function Login(){
                     <Link to="/forgotPWD" style="login">Mot de passe oublié</Link>
                     <Aside style="login">
                         <Button click={() => transition()} style="login">
-                            <Link to="" style="login">S'inscrire</Link>    
+                            <Link to="/register" style="login">S'inscrire</Link>    
                         </Button> 
                     </Aside>
                 </form>
