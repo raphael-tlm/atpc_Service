@@ -98,6 +98,21 @@ app.get('/TryRegister', (req, res) => {
     });
 });
 
+app.get('/isAdmin', (req, res) => {
+    const token = req.query.token;
+    const statut = req.query.statut;
+    const prenom = req.query.prenom;
+    const nom = req.query.nom;
+    const mail = req.query.mail;
+    const id = req.query.id;
+    const isAdmin = jwt.decode(statut, prenom+nom+mail+id+token+secret);
+    if(isAdmin === '1'){
+        res.send({message: true});
+    } else {
+        res.send({message: false});
+    }
+});
+
 app.listen(7596, () => {
     console.log('Server running on port 7596');
 });

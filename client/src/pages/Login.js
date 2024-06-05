@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Input from '../assets/components/Input';
 import Button from '../assets/components/Button';
@@ -14,7 +14,7 @@ export default function Login(){
     const [ password, setPassword ] = useState(''); 
 
     //seting the token in the local storage
-    function handleLogin(){
+    async function handleLogin(){
         try{
             if(mail === '') throw 'Veuillez entrer un mail';
             if(password === '') throw 'Veuillez entrer un mot de passe';
