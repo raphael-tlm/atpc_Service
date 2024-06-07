@@ -7,21 +7,21 @@ export default function Navigation({style, isAdmin}){
     const theStyle = (style) ? '-'+style : '';
     return (
         <nav className={'nav'+theStyle}>
-            {isAdmin ? null : (<img className="img-home" src={require('../images/minilogo.png')}/>)}
-            <Button style='home' ><Link style='home' to='/'>Acceuil</Link></Button>
+            {isAdmin ? null : (<img className={"img"+theStyle} src={require('../images/minilogo.png')}/>)}
+            <Link style={style} to='/'><Button style={style} >Acceuil</Button></Link>
             <DivAdmin style='home-discussion' isAdmin={isAdmin}>
-                <Button style='home' ><Link style='home' to='/newdiscussion'>Nouvelle Discussion</Link></Button>
-                <Button style='home'><Link style='home' to='/'>Listes Discussions</Link></Button>
-                <Button style='home'><Link style='home' to='/'>Discussions Fermée</Link></Button>
+            <Link style={style} to='/newdiscussion'><Button style={style} >Nouvelle Discussion</Button></Link>
+                <Link style={style} to='/'><Button style={style}>Listes Discussions</Button></Link>
+                <Link style={style} to='/'><Button style={style}>Discussions Fermée</Button></Link>
             </DivAdmin>
             {isAdmin ? (
                 <DivAdmin style='home-todo' isAdmin={isAdmin}>
-                    <Button style='home'><Link style='home' to='/'>Nouvelle Tâche</Link></Button>
-                    <Button style='home'><Link style='home' to='/'>Listes Tâches</Link></Button>
-                    <Button style='home'><Link style='home' to='/'>Gerer Tâches</Link></Button>
+                    <Link style={style} to='/'><Button style={style}>Nouvelle Tâche</Button></Link>
+                    <Link style={style} to='/'><Button style={style}>Listes Tâches</Button></Link>
+                    <Link style={style} to='/'><Button style={style}>Gerer Tâches</Button></Link>
                 </DivAdmin>
             ) : null}
-            <Button style='home'><Link style='home' to='/'>Mon Profil</Link></Button>
+            <Link style={style} to='/'><Button style={style}>Mon Profil</Button></Link>
         </nav>
     )
 }

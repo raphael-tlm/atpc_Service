@@ -26,11 +26,11 @@ export default function Register(){
             .then(data => {
                 if(data.token){
                     localStorage.setItem('token', data.token);
-                    localStorage.setItem('mail', mail);
-                    localStorage.setItem('prenom', prenom);
-                    localStorage.setItem('nom', nom);
-                    localStorage.setItem('id', data.id);
-                    localStorage.setItem('statut', data.statut);
+                    localStorage.setItem('x2', data.x2);
+                    localStorage.setItem('x3', data.x3);
+                    localStorage.setItem('x0', data.x0);
+                    localStorage.setItem('x1', data.x1);
+                    localStorage.setItem('x4', data.x4);
                     window.location.href = '/';
                 } else {
                     alert(data.message || data.err || 'Erreur inconnue');

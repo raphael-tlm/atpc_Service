@@ -34,14 +34,14 @@ io.on('connection', (socket) => {
 
     socket.on('login', (data) => {
         const user = {
-            nom: data.nom,
-            prenom: data.prenom,
-            id: data.id,
-            statut: data.statut,
+            x0: data.x0,
+            x3: data.x3,
+            x1 : data.x1,
+            x4: data.x4,
             socketId: socket.id
         }
-        if(connectedUsers.find(user => user.id === data.id)){
-            connectedUsers = connectedUsers.filter(user => user.id !== data.id);
+        if(connectedUsers.find(user => user.x1 === data.x1)){
+            connectedUsers = connectedUsers.filter(user => user.x1 !== data.x1);
         }
         connectedUsers.push(user);
         io.emit('connectedUsers', connectedUsers);
@@ -79,7 +79,7 @@ app.get('/TryLogin', (req, res) => {
         if(result.length > 0){
             if(result[0].Mot_De_Passe === password){
                 const token = jwt.sign({mail: mail}, secret, { expiresIn: 60 * 35 });
-                res.send({token: token, nom : result[0].Nom, prenom : result[0].Prenom, mail : result[0].Mail, id : result[0].Id_Utilisateur, statut : jwt.sign(result[0].Statut,result[0].prenom+result[0].nom+result[0].mail+result[0]+token+secret)});
+                res.send({token: token, x0 : jwt.sign(result[0].Nom, secret), x3 : jwt.sign(result[0].Prenom, secret), x2 : jwt.sign(mail, secret), x1 : jwt.sign(result[0].Id_Utilisateur, secret),x4 : jwt.sign(result[0].Statut,result[0].prenom+result[0].nom+result[0].mail+result[0]+token+secret)});
             }
             else{
                 res.send({err: 'Mot de passe incorrect'});
@@ -91,6 +91,7 @@ app.get('/TryLogin', (req, res) => {
 });
 
 app.get('/TryRegister', (req, res) => {
+
     const mail = req.query.mail;
     const password = jwt.sign(req.query.password, secret);
     const prenom = req.query.prenom;
@@ -101,24 +102,60 @@ app.get('/TryRegister', (req, res) => {
             res.send({err: err});
         }
         else{
-            res.send({token: jwt.sign({mail: mail}, secret, { expiresIn: 60 * 35 }), id : result.insertId, statut : jwt.sign(0, prenom+nom+mail+result.insertId+secret)});
+            res.send({token: jwt.sign({mail: mail}, secret, { expiresIn: 60 * 35 }), x1 : jwt.sign(result.insertId, secret), x0 : jwt.sign(nom, secret), x3 : jwt.sign(prenom, secret), x2 : jwt.sign(mail, secret), x4 : jwt.sign(0, prenom+nom+mail+result.insertId+secret)});
         }
     });
 });
 
 app.get('/isAdmin', (req, res) => {
     const token = req.query.token;
-    const statut = req.query.statut;
-    const prenom = req.query.prenom;
-    const nom = req.query.nom;
-    const mail = req.query.mail;
-    const id = req.query.id;
+    const statut = req.query.x4;
+    const prenom = req.query.x3;
+    const nom = req.query.x0;
+    const mail = req.query.x2;
+    const id = req.query.x1;
     const isAdmin = jwt.decode(statut, prenom+nom+mail+id+token+secret);
     if(isAdmin === '1'){
         res.send({message: true});
     } else {
         res.send({message: false});
     }
+});
+
+app.get('/getData', (req, res) => {
+    const nom = req.query.x0;
+    const prenom = req.query.x3;
+    const id = req.query.x1;
+    res.send({id: jwt.decode(nom, secret), n: jwt.decode(prenom, secret), c : jwt.decode(id, secret)});
+});    
+
+app.get('/getFlair', (req, res) => {
+    let data = [];
+    const sql = 'SELECT * FROM categorie';
+    db.query(sql, (err, result) => {
+        if(err){
+            res.send({err: err});
+        }
+        for(let i = 0; i < result.length; i++){
+            data.push({id : result[i].Id_Categorie, n: result[i].Label, c: result[i].Importance});
+        }
+        res.send(data);
+    });
+
+});
+
+app.get('/getUser', (req, res) => {
+    let data = [];
+    const sql = 'SELECT Id_Utilisateur, Nom, Prenom, Statut FROM utilisateurs';
+    db.query(sql, (err, result) => {
+        if(err){
+            res.send({err: err});
+        }
+        for(let i = 0; i < result.length; i++){
+            data.push({id : result[i].Id_Utilisateur, n: result[i].Prenom + ' ' + result[i].Nom, c: result[i].Statut});
+        }
+        res.send(data);
+    });
 });
 
 server.listen(7596, () => {

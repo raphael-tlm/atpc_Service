@@ -21,12 +21,12 @@ export default function Login(){
             .then(response => response.json())
             .then(data => {
                 if(data.token){
+                    localStorage.setItem('x0', data.x0);
                     localStorage.setItem('token', data.token);
-                    localStorage.setItem('mail', mail);
-                    localStorage.setItem('prenom', data.prenom);
-                    localStorage.setItem('nom', data.nom);
-                    localStorage.setItem('id', data.id);
-                    localStorage.setItem('statut', data.statut);
+                    localStorage.setItem('x3', data.x3);
+                    localStorage.setItem('x2', data.x2);
+                    localStorage.setItem('x4', data.x4);
+                    localStorage.setItem('x1', data.x1);
                     window.location.href = '/';
                 } else {
                     alert(data.message || data.err || 'Erreur inconnue');
