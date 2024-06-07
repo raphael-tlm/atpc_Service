@@ -1,45 +1,51 @@
-const express = require('express');
-const http = require('http');
 const mysql = require('mysql');
 const cors = require('cors');
-const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 
-const app = express();
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
 
+const app = express();
 app.use(cors());
+
+const server = http.createServer(app);
 
 // JWT
 const secret = '6d5s4v98ds4v65ds1v984fe65v51e98r4b65f4695f4de';
 
 // Socket.io
-const server = http.createServer(app);
 
-const io = new Server(server , {
+const io = new Server(server, {
+    path: '/socket.io',
     cors: {
-        origin: '*',
+        origin: 'http://localhost:3000',
         methods: ['GET', 'POST']
     }
 });
 
-// List of User connected (logged in the site)
-let users = [];
+let connectedUsers = [];
 
 io.on('connection', (socket) => {
-
-    socket.on("disconnect", () => {
-        if(users.length > 0 && users.find(user => user.soketId === socket.id) !== undefined){
-            console.log(users.find(user => user.soketId === socket.id).name + ' ' + users.find(user => user.soketId === socket.id).firstname + ' disconnected');
-        }
-        users = users.filter(user => user.soketId !== socket.id);
+    socket.on('disconnect', () => {
+        connectedUsers = connectedUsers.filter(user => user.socketId !== socket.id);
+        io.emit('connectedUsers', connectedUsers);
     });
 
     socket.on('login', (data) => {
-        users.push({id: data.id, name: data.name, firstname: data.firstname, statut : data.statut, soketId: socket.id});
-        console.log(data.name + ' ' + data.firstname + ' connected');
-        io.emit('users', users);
+        const user = {
+            nom: data.nom,
+            prenom: data.prenom,
+            id: data.id,
+            statut: data.statut,
+            socketId: socket.id
+        }
+        if(connectedUsers.find(user => user.id === data.id)){
+            connectedUsers = connectedUsers.filter(user => user.id !== data.id);
+        }
+        connectedUsers.push(user);
+        io.emit('connectedUsers', connectedUsers);
     });
-    
 });
 
 // MySQL
@@ -48,7 +54,7 @@ const db = mysql.createConnection({
     host: 'localhost',
     user: 'gestion',
     password: 'gestion',
-    database: 'ATPC_services'
+    database: 'service_atpc'
 });
 
 
@@ -113,6 +119,6 @@ app.get('/isAdmin', (req, res) => {
     }
 });
 
-app.listen(7596, () => {
+server.listen(7596, () => {
     console.log('Server running on port 7596');
 });
