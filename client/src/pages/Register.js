@@ -53,7 +53,7 @@ export default function Register(){
     return(
         <div className='register-page'>
             <div className="main-content">
-            <form className="register-form">
+            <div className="register-form">
                 <div>
                     <div><Input style='register' placeholder="Nom . . ." label="Votre nom : " value={nom} change={(i) => setNom(i.target.value)} type='text'/></div>
                     <div><Input style='register' placeholder="Prénom . . ." label="Votre prénom :" value={prenom} change={(i) => setPrenom(i.target.value)} type='text'/></div>
@@ -66,7 +66,7 @@ export default function Register(){
                         <Link to="/login" style="register">Se connecter</Link>    
                     </Button> 
                 </Aside>
-            </form>
+            </div>
             <img className='img-register' src={require('../assets/images/logo.png')}/>
             </div>
         </div>
