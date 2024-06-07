@@ -29,6 +29,11 @@
     float: left;
 }
 
+.home-page .nav-home .a-home{
+    text-decoration: none;
+    color: #FFFFFF;
+}
+
 .home-page .nav-home .button-home{
     width: 230px;
     height: 65px;

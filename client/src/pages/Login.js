@@ -13,12 +13,11 @@ export default function Login(){
     const [ mail, setMail ] = useState('');
     const [ password, setPassword ] = useState(''); 
 
-    //seting the token in the local storage
-    async function handleLogin(){
+    function handleLogin(){
         try{
             if(mail === '') throw 'Veuillez entrer un mail';
             if(password === '') throw 'Veuillez entrer un mot de passe';
-            fetch('http://localhost:7596/TryLogin?mail=' + mail + '&password=' + password)
+            fetch('http://localhost:7596/TryLogin?mail=' + mail + '&password=' + password )
             .then(response => response.json())
             .then(data => {
                 if(data.token){
@@ -39,6 +38,7 @@ export default function Login(){
         }
     }
 
+
     function transition(){
         const form = document.querySelector('.login-form');
         document.querySelector('.img-login').style.zIndex = '1';
@@ -50,7 +50,7 @@ export default function Login(){
         <div className="login-page">
             <div className="main-content">
                 <img className='img-login' src={require('../assets/images/logo.png')}/>
-                <form className="login-form">
+                <div className="login-form" >
                     <Input style="login" placeholder="monMail@atpc.asso.fr" label="Entrez votre E-Mail :" value={mail} change={(e) => setMail(e.target.value)} type='text'/>
                     <Input style="login" placeholder="monMotDePasseIci" label="Entrez votre mot de passe :" value={password} change={(i) => setPassword(i.target.value)} type='password'/>
                     <Button click={() => handleLogin()} style="login">Se connecter</Button>
@@ -60,7 +60,7 @@ export default function Login(){
                             <Link to="/register" style="login">S'inscrire</Link>    
                         </Button> 
                     </Aside>
-                </form>
+                </div>
             </div>
         </div>
     )

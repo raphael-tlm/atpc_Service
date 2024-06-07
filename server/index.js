@@ -19,7 +19,7 @@ const secret = '6d5s4v98ds4v65ds1v984fe65v51e98r4b65f4695f4de';
 const io = new Server(server, {
     path: '/socket.io',
     cors: {
-        origin: 'http://localhost:3000',
+        origin: '*',
         methods: ['GET', 'POST']
     }
 });
@@ -54,7 +54,7 @@ const db = mysql.createConnection({
     host: 'localhost',
     user: 'gestion',
     password: 'gestion',
-    database: 'service_atpc'
+    database: 'atpc_services'
 });
 
 
@@ -82,10 +82,10 @@ app.get('/TryLogin', (req, res) => {
                 res.send({token: token, nom : result[0].Nom, prenom : result[0].Prenom, mail : result[0].Mail, id : result[0].Id_Utilisateur, statut : jwt.sign(result[0].Statut,result[0].prenom+result[0].nom+result[0].mail+result[0]+token+secret)});
             }
             else{
-                res.send({message: 'Mot de passe incorrect'});
+                res.send({err: 'Mot de passe incorrect'});
             }
         } else {
-            res.send({message: 'Utilisateur non trouvé'});
+            res.send({err: 'Utilisateur non trouvé'});
         }
     });
 });
@@ -100,7 +100,9 @@ app.get('/TryRegister', (req, res) => {
         if(err){
             res.send({err: err});
         }
-        res.send({token: jwt.sign({mail: mail}, secret, { expiresIn: 60 * 35 }), id : result.insertId, statut : jwt.sign(0, prenom+nom+mail+result.insertId+secret)});
+        else{
+            res.send({token: jwt.sign({mail: mail}, secret, { expiresIn: 60 * 35 }), id : result.insertId, statut : jwt.sign(0, prenom+nom+mail+result.insertId+secret)});
+        }
     });
 });
 
