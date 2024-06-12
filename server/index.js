@@ -1,21 +1,13 @@
-const mysql = require('mysql');
-const cors = require('cors');
-const jwt = require('jsonwebtoken');
-
 const express = require('express');
 const http = require('http');
+const jwt = require('jsonwebtoken');
+const mysql = require('mysql');
+const cors = require('cors');
 const { Server } = require('socket.io');
 
 const app = express();
 app.use(cors());
-
 const server = http.createServer(app);
-
-// JWT
-const secret = '6d5s4v98ds4v65ds1v984fe65v51e98r4b65f4695f4de';
-
-// Socket.io
-
 const io = new Server(server, {
     path: '/socket.io',
     cors: {
@@ -24,140 +16,185 @@ const io = new Server(server, {
     }
 });
 
-let connectedUsers = [];
+const secret = '6d5s4v98ds4v65ds1v984fe65v51e98r4b65f4695f4de';
 
-io.on('connection', (socket) => {
-    socket.on('disconnect', () => {
-        connectedUsers = connectedUsers.filter(user => user.socketId !== socket.id);
-        io.emit('connectedUsers', connectedUsers);
+const openCon = () => {
+    const con = mysql.createConnection({
+        host: 'localhost',
+        user: 'gestion',
+        password: 'gestion',
+        database: 'atpc_services'
     });
-
-    socket.on('login', (data) => {
-        const user = {
-            x0: data.x0,
-            x3: data.x3,
-            x1 : data.x1,
-            x4: data.x4,
-            socketId: socket.id
+    con.connect((err) => {
+        if (err) {
+            console.log('Error connecting to Db \n'+err);
+            return;
         }
-        if(connectedUsers.find(user => user.x1 === data.x1)){
-            connectedUsers = connectedUsers.filter(user => user.x1 !== data.x1);
-        }
-        connectedUsers.push(user);
-        io.emit('connectedUsers', connectedUsers);
+        console.log('Connection established');
     });
-});
+    return con;
+}
 
-// MySQL
+const connection = openCon();
 
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'gestion',
-    password: 'gestion',
-    database: 'atpc_services'
-});
+// --------------------------------------------------------------------------------------------
 
+function login(connection, mail, password, res)
+{   
 
-db.connect((err) => {
-    if(err){
-        console.log('Error connecting to database : ', err);
-    } else {
-        console.log('Connected to database');
-    }
-});
+    const query = `SELECT * FROM utilisateurs WHERE Mail=?`;
+    connection.query(query, [mail], (err, result) => {
+        if (err) {
+            res.send({err :'Erreur lors de la connexion'});
+            return;
+        }
+        if (result.length === 0) {
+            res.send({err :'E-Mail inconnu'});
+            return;
+        }
+        if (jwt.decode(result[0].Mot_De_Passe).password !== password){
+            console.log(jwt.decode(result[0].Mot_De_Passe));
+            res.send({err : 'Mot de passe incorrect'});
+            return;
+        }
+        const token = jwt.sign({mail : mail}, secret,{expiresIn: '1h'});
+        res.send({data:{
+            token: token,
+            name : result[0].Nom,
+            firstName : result[0].Prenom,
+            mail : mail,
+            id : result[0].Id_Utilisateur,
+            isAdmin : result[0].Statut ? true : false
+        }})
+    });
+}
 
-// Querry
 
 app.get('/TryLogin', (req, res) => {
     const mail = req.query.mail;
-    const password = jwt.sign(req.query.password, secret);
-    const sql = 'SELECT * FROM utilisateurs WHERE Mail = ? ';
-    db.query(sql, [mail], (err, result) => {
+    const password = req.query.password;
+    login(connection, mail, password, res);
+});
+
+// --------------------------------------------------------------------------------------------
+
+function register(connection, req, res){
+    const name = req.query.name;
+    const firstName = req.query.firstName;
+    const mail = req.query.mail;
+    const password = req.query.password;
+
+
+    const query = 'SELECT * FROM utilisateurs WHERE Mail = ?';
+    connection.query(query, [mail], (err, result) => {
         if(err){
-            res.send({err: err});
+            res.json({err: 'Erreur serveur'});
+            return;
         }
         if(result.length > 0){
-            if(result[0].Mot_De_Passe === password){
-                const token = jwt.sign({mail: mail}, secret, { expiresIn: 60 * 35 });
-                res.send({token: token, x0 : jwt.sign(result[0].Nom, secret), x3 : jwt.sign(result[0].Prenom, secret), x2 : jwt.sign(mail, secret), x1 : jwt.sign(result[0].Id_Utilisateur, secret),x4 : jwt.sign(result[0].Statut,result[0].prenom+result[0].nom+result[0].mail+result[0]+token+secret)});
-            }
-            else{
-                res.send({err: 'Mot de passe incorrect'});
-            }
-        } else {
-            res.send({err: 'Utilisateur non trouvé'});
+            res.json({err: 'Mail déjà utilisé'});
+            return;
         }
+    const query = 'INSERT INTO utilisateurs (Nom, Prenom, Mail, Mot_De_Passe) VALUES (?, ?, ?, ?)';
+        connection.query(query, [name, firstName, mail, jwt.sign({password: password}, secret)], (err, result) => {
+            if(err){
+                res.json({err: 'Erreur serveur'});
+                return;
+            }
+            res.json({data :{name: name, firstName: firstName, email: mail, token: jwt.sign({mail: mail}, secret), id: result.insertId, isAdmin: false}});
+        });
     });
-});
+}
 
 app.get('/TryRegister', (req, res) => {
-
-    const mail = req.query.mail;
-    const password = jwt.sign(req.query.password, secret);
-    const prenom = req.query.prenom;
-    const nom = req.query.nom;
-    const sql = 'INSERT INTO utilisateurs (Nom, Prenom, Mail, Mot_De_Passe) VALUES (?, ?, ?, ?)';
-    db.query(sql, [nom , prenom, mail, password], (err, result) => {
-        if(err){
-            res.send({err: err});
-        }
-        else{
-            res.send({token: jwt.sign({mail: mail}, secret, { expiresIn: 60 * 35 }), x1 : jwt.sign(result.insertId, secret), x0 : jwt.sign(nom, secret), x3 : jwt.sign(prenom, secret), x2 : jwt.sign(mail, secret), x4 : jwt.sign(0, prenom+nom+mail+result.insertId+secret)});
-        }
-    });
+    register(connection, req, res);
 });
 
-app.get('/isAdmin', (req, res) => {
+// --------------------------------------------------------------------------------------------
+
+function verifToken(req , res){
     const token = req.query.token;
-    const statut = req.query.x4;
-    const prenom = req.query.x3;
-    const nom = req.query.x0;
-    const mail = req.query.x2;
-    const id = req.query.x1;
-    const isAdmin = jwt.decode(statut, prenom+nom+mail+id+token+secret);
-    if(isAdmin === '1'){
-        res.send({message: true});
-    } else {
-        res.send({message: false});
-    }
-});
+    const email = req.query.mail;
 
-app.get('/getData', (req, res) => {
-    const nom = req.query.x0;
-    const prenom = req.query.x3;
-    const id = req.query.x1;
-    res.send({id: jwt.decode(nom, secret), n: jwt.decode(prenom, secret), c : jwt.decode(id, secret)});
-});    
-
-app.get('/getFlair', (req, res) => {
-    let data = [];
-    const sql = 'SELECT * FROM categorie';
-    db.query(sql, (err, result) => {
+    jwt.verify(token, secret, (err, decoded) => {
         if(err){
-            res.send({err: err});
+            res.send({err: 'Token invalide'});
+            return;
         }
-        for(let i = 0; i < result.length; i++){
-            data.push({id : result[i].Id_Categorie, n: result[i].Label, c: result[i].Importance});
+        if(decoded.email !== email){
+            res.send({err: 'Token invalide'});
+            return;
         }
-        res.send(data);
+        res.send({data: decoded});
     });
+}
 
+app.get('/TryVerifToken', (req, res) => {
+    verifToken(req, res);
 });
+
+// --------------------------------------------------------------------------------------------
+
+function getInfo (connection, req, res){
+    const token = req.query.token;
+    const query = 'SELECT * FROM utilisateurs WHERE Mail = ?';
+    jwt.verify(token, secret, (err, decoded) => {
+        if(err){
+            res.send({err: 'Token invalide'});
+            return;
+        }
+        connection.query(query, [decoded.mail], (err, result) => {
+            if(err){
+                res.send({err: 'Erreur serveur'});
+                return;
+            }
+            res.send({data : {name: result[0].Nom, firstName: result[0].Prenom, email: decoded.email, token: token, id: result[0].Id_Utilisateur, isAdmin: result[0].Statut ? true : false}});
+        });
+    });
+}
+
+
+app.get('/TryGetInfo', (req, res) => {
+    getInfo(connection, req, res);
+});
+
+// --------------------------------------------------------------------------------------------
+
+function getUser(connection, req, res){
+    const query = 'SELECT Id_Utilisateur, Nom, Prenom FROM utilisateurs WHERE NOT Id_Utilisateur =' + req.query.id;
+    connection.query(query, (err, result) => {
+        if(err){
+            res.send({err: 'Erreur serveur'});
+            return;
+        }
+        res.send(result);
+    });
+}
 
 app.get('/getUser', (req, res) => {
-    let data = [];
-    const sql = 'SELECT Id_Utilisateur, Nom, Prenom, Statut FROM utilisateurs';
-    db.query(sql, (err, result) => {
-        if(err){
-            res.send({err: err});
-        }
-        for(let i = 0; i < result.length; i++){
-            data.push({id : result[i].Id_Utilisateur, n: result[i].Prenom + ' ' + result[i].Nom, c: result[i].Statut});
-        }
-        res.send(data);
-    });
+    getUser(connection, req, res);
 });
 
-server.listen(7596, () => {
-    console.log('Server running on port 7596');
+// --------------------------------------------------------------------------------------------
+
+function getTag(connection, req, res){
+    const query = 'SELECT * FROM categorie';
+    connection.query
+    (query, (err, result) => {
+        if(err){
+            res.send({err: 'Erreur serveur'});
+            return;
+        }
+        res.send(result);
+    });
+}
+
+app.get('/getTag', (req, res) => {
+    getTag(connection, req, res);
+});
+
+// --------------------------------------------------------------------------------------------
+
+app.listen(6958, () => {
+    console.log('Server started on http://localhost:6958');
 });

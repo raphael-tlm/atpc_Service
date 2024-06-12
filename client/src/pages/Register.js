@@ -1,74 +1,40 @@
-import { useState } from 'react';
+import React, { useState } from 'react'
+import { useAuth } from '../assets/components/custom/hooks/AuthProvider'
+import HandlePage from '../assets/components/HandlePage'
+import InputForm from '../assets/components/InputForm'
 
-import Input from '../assets/components/Input';
-import Button from '../assets/components/Button';
-import Aside from '../assets/components/Aside';
-import Link from '../assets/components/Link';
+import '../assets/styles/Register.css'
 
-import '../assets/css/register.css';
+export default function Register() {
+    const [mail, setMail] = useState('')
+    const [password, setPassword] = useState('')
+    const [name, setName] = useState('')
+    const [firstName, setFirstName] = useState('')
 
-export default function Register(){
-    localStorage.clear();
+    const auth = useAuth();
 
-    const [ mail, setMail ] = useState('');
-    const [ password, setPassword ] = useState(''); 
-    const [ prenom, setPrenom ] = useState('');
-    const [ nom, setNom ] = useState('');
-    
-    function handleRegister(){
-        try{
-            if(mail === '') throw 'Veuillez entrer un mail';
-            if(password === '') throw 'Veuillez entrer un mot de passe';
-            if(prenom === '') throw 'Veuillez entrer un prénom';
-            if(nom === '') throw 'Veuillez entrer un nom';
-            fetch('http://localhost:7596/TryRegister?mail=' + mail + '&password=' + password + '&prenom=' + prenom + '&nom=' + nom)
-            .then(response => response.json())
-            .then(data => {
-                if(data.token){
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('x2', data.x2);
-                    localStorage.setItem('x3', data.x3);
-                    localStorage.setItem('x0', data.x0);
-                    localStorage.setItem('x1', data.x1);
-                    localStorage.setItem('x4', data.x4);
-                    window.location.href = '/';
-                } else {
-                    alert(data.message || data.err || 'Erreur inconnue');
-                }
-            });
+    const handleSubmitEvent = (e) => {
+        e.preventDefault();
+        if (mail !== "" && password !== "" && name !== "" && firstName !== "") {
+            auth.registerAction({mail, password, name, firstName});
+            return;
         }
-        catch(e){
-            alert(e);
-        }
-    }  
-    
-    function transition(){
-        const form = document.querySelector('.register-form');
-        document.querySelector('.img-register').style.zIndex = '1';
-        form.style.zIndex = '0';
-        form.classList.add('transition');
-    }
-
+        alert("Entrez des valeurs valides");
+    };
 
     return(
-        <div className='register-page'>
-            <div className="main-content">
-            <div className="register-form">
-                <div>
-                    <div><Input style='register' placeholder="Nom . . ." label="Votre nom : " value={nom} change={(i) => setNom(i.target.value)} type='text'/></div>
-                    <div><Input style='register' placeholder="Prénom . . ." label="Votre prénom :" value={prenom} change={(i) => setPrenom(i.target.value)} type='text'/></div>
+        <HandlePage title='register'>
+            <form className='page-register-form' onSubmit={handleSubmitEvent}>
+                <div className='page-register-form-name'>
+                    <InputForm title='register' type='text' name='name' placeholder='Nom...' label='Votre nom :' data={name} setData={setName}/>
+                    <InputForm title='register' type='text' name='firstName' placeholder='Prénom...' label='Votre prénom :' data={firstName} setData={setFirstName}/>
                 </div>
-                <Input style="register" placeholder="monMail@atpc.asso.fr" label="Entrez votre E-Mail :" value={mail} change={(e) => setMail(e.target.value)} type='text'/>
-                <Input style="register" placeholder="monMotDePasseIci" label="Entrez votre mot de passe :" value={password} change={(i) => setPassword(i.target.value)} type='password'/>
-                <Button click={() => handleRegister()} style="register">S'inscrire</Button>
-                <Aside style="register">
-                    <Button click={() => transition()} style="register">
-                        <Link to="/login" style="register">Se connecter</Link>    
-                    </Button> 
-                </Aside>
-            </div>
-            <img className='img-register' src={require('../assets/images/logo.png')}/>
-            </div>
-        </div>
+                <InputForm title='register' type='text' name='mail' placeholder='monMail@atpc.asso.fr' label='Entrez votre E-Mail :' data={mail} setData={setMail}/>
+                <InputForm title='register' type='password' name='password' placeholder='monMotDePasseIci' label='Entrez votre mot de passe :' data={password} setData={setPassword}/>
+                <button className='page-register-form-button'>S'inscrire</button>
+                <a href='/connexion' className='page-register-form-link'>Déjà inscrit ?</a>
+            </form>
+            <img src={require('../assets/images/logo.png')} className='page-register-logo'/>
+        </HandlePage>
     )
 }

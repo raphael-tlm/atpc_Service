@@ -1,20 +1,29 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-import Login from './pages/Login.js';
+import {AuthProvider} from './assets/components/custom/hooks/AuthProvider.js';
+
 import Home from './pages/Home.js';
+import Login from './pages/Login.js';
 import Register from './pages/Register.js';
-import CreateDiscussion from './pages/CreateDiscussion.js';
+import PrivateRoute from './assets/components/custom/router/route.js';
+
+import './app.css';
+import NewDiscussion from './pages/NewDiscussion.js';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/newdiscussion" element={<CreateDiscussion />} />
-      </Routes>
-    </Router>
+      <Router>
+        <AuthProvider>
+          <Routes>
+            <Route path="/connexion" element={<Login />} />
+            <Route path="/inscription" element={<Register />} />
+            <Route element={<PrivateRoute />}>
+              <Route path="/" element={<Home />} />
+              <Route path="nouvelle-discussion" element={<NewDiscussion />}/>
+            </Route>
+          </Routes>
+        </AuthProvider>
+      </Router>
   );
 }
 
