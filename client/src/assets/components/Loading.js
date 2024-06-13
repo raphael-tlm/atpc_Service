@@ -4,7 +4,8 @@ import FadeLoader from 'react-spinners/FadeLoader';
 export default function Loading({overideStyle = false}) {
 
     const style = {
-        position: 'fixed',
+        position: 'absolute',
+        zIndex: '1000',
         top: '0',
         left: '0',
         width: '100%',

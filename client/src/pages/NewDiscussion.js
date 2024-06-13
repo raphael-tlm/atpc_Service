@@ -2,10 +2,14 @@ import React, { useEffect, useState } from 'react'
 import HandlePage from '../assets/components/HandlePage'
 import { useAuth } from '../assets/components/custom/hooks/AuthProvider'
 import InputForm from '../assets/components/InputForm';
-import Search from '../assets/components/Search';
+import Search from '../assets/components/SearchforMulti';
 
-export default function NewDiscussion() {
+import './../assets/styles/Newdiscussion.css'
+
+export default function Newiscussion() {
     const auth = useAuth();
+
+    const [readOnly , setReadOnly] = useState(false);
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -51,27 +55,28 @@ export default function NewDiscussion() {
         getUser();
     }, [auth.id]);
 
-    useEffect(() => {   
-        console.log(userSelected);
-    }, [userSelected]);
-
     const handleSubmit = async (e) => {
+        
     }
 
     return (
-        <HandlePage style="newdiscussion" nav={auth}>
-            <form className='page-newdiscussion-form' onSubmit={handleSubmit}>
+        <HandlePage title="newdiscussion" nav={auth}>
+            <div className='page-newdiscussion-form'>
                 <InputForm title={"newdiscussion"}  type='text' name='title' placeholder='Nom de la discussion' data={title} setData={setTitle}/>
                 <div className='form-newdiscussion-custom'>
                     <div className='form-newdiscussion-research'>
-                        <div className='form-newdiscussion-research-list'>
-                            <Search title={'newdiscussion'} ph={'Recherché un Utilisateur'} data={userAvailble} setData={setUserAvailable} search={searchUser} setSearch={setSearchUser} selected={userSelected} setSelected={setUserSelected} isMulti/>
-                            <Search title={'newdiscussion'} ph={'Recherché un Tag'} data={tagAvailable} setData={setTagAvailable} search={searchTag} setSearch={setSearchTag} selected={tagSelected} setSelected={setTagSelected} isMulti/>
-                        </div>
+                        <Search title={'newdiscussion'} ph={'Rechercher un Utilisateur'} data={userAvailble} setData={setUserAvailable} search={searchUser} setSearch={setSearchUser} selected={userSelected} setSelected={setUserSelected} isMulti allowAll/>
                     </div>
-                    <textarea className='form-newdiscussion-textarea' name='description' placeholder='Description de la discussion' value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
+                    <div className='form-newdiscussion-research'>
+                        <Search title={'newdiscussion'} ph={'Rechercher un Tag'} data={tagAvailable} setData={setTagAvailable} search={searchTag} setSearch={setSearchTag} selected={tagSelected} setSelected={setTagSelected} />
+                    </div>
                 </div>
-            </form>
+                <textarea className='form-newdiscussion-textarea' name='description' placeholder='Description de la discussion' value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
+                <div className='page-newdiscussion-button'>
+                    {auth.isAdmin ? <button type='button' onClick={() => setReadOnly(!readOnly)}>Admin Seul</button> : null}
+                    <button onClick={handleSubmit}>Créer</button>
+                </div>
+            </div>
             
         </HandlePage>
     )

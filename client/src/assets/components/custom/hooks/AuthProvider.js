@@ -89,8 +89,10 @@ export const AuthProvider = ({ children }) => {
                 }
             catch(e){
                 console.error(e);
+                navigate('/connexion');
             }
         }
+        
 
         if(localStorage.getItem('token')){
             getInfo();

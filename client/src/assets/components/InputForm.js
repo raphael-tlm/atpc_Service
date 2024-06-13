@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function InputForm({title, type, name, placeholder, label = false, data, setData}) {
+export default function InputForm({title, type, name, placeholder, label = false, data, setData, onFocus= null, onBlur=null}) {
   function Label() {
     return <label className={'form-'+title+'-label'} htmlFor={name}>{label}</label>
   }
@@ -8,7 +8,7 @@ export default function InputForm({title, type, name, placeholder, label = false
   return (
         <div className={'form-' + title + '-inputandlabel'}>
             {label ? <Label /> : null }
-            <input className={'form-'+title+'-input'} type={type} name={name} placeholder={placeholder} value={data} onChange={(e) => setData(e.target.value)}/>
+            <input className={'form-'+title+'-input'} type={type} name={name} placeholder={placeholder} value={data} onChange={(e) => setData(e.target.value)} autoComplete='off' onFocus={onFocus} onBlur={onBlur}/>
         </div>
   )
 }

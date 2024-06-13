@@ -5,5 +5,11 @@
 }
 
 body{
+    height: 100vh;
     font-family: 'inter', sans-serif;
+}
+
+html, body, #root{
+    height: 100vh;
+    width: 100vw;
 }
