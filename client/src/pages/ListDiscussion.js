@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { Navigate } from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 import HandlePage from '../assets/components/HandlePage'
 import { useAuth } from '../assets/components/custom/hooks/AuthProvider';
 import InputForm from '../assets/components/InputForm';
+
+import '../assets/styles/ListDiscussion.css'
 
 export default function ListDiscussion() {
     const auth = useAuth();
@@ -10,7 +12,9 @@ export default function ListDiscussion() {
     const [search, setSearch] = useState('');
     const [searchList, setSearchList] = useState([]);
     const [list, setList] = useState([]);
-    
+
+    const navigate = useNavigate();
+
     useEffect(() => {
         const fetchData = async () => {
             const res = await fetch('http://localhost:6958/getallDiscussion?id='+auth.id);
@@ -44,12 +48,11 @@ export default function ListDiscussion() {
 
     return (
         <HandlePage title={'list-discussion'} nav={auth}>
-        <div className='page-list-discussion-content'>
             <InputForm title={'list-discussion'} name={'search'} placeholder={'Rechercher une discussion'} data={search} setData={setSearch} />
             
             <div className='list-discussion-content'>
-                <table>
-                    <thead>
+                <table className='table-discussion-list'>
+                    <thead className='table-head-dl'>
                         <tr>
                             <th onClick={() => {
                                 setSearchList([...searchList.sort((a, b) => {
@@ -78,12 +81,12 @@ export default function ListDiscussion() {
                             }}>Date d'ouverture</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {searchList.map((discussion, index) => {
+                    <tbody className='table-body-dl'>
+                    {searchList.map((discussion, index) => {                           
                             return (
-                                <tr key={index} onClick={() => {
-                                    Navigate('/discussion', {state : {id : discussion.Id_Discussion}});
-                                }}>
+                                <tr key={index} onClick={() => { navigate('/discussion', {
+                                    state: {id: discussion.Id_Discussion}
+                                });}}>
                                     <td>{discussion.Title}</td>
                                     <td>{discussion.Tag}</td>
                                     <td>{discussion.Statut}</td>
@@ -95,7 +98,6 @@ export default function ListDiscussion() {
                     </tbody>
                 </table>
             </div>
-        </div>
     </HandlePage>    
   )
 }
