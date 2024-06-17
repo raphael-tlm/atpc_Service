@@ -1,5 +1,5 @@
 import { useContext, createContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
 
@@ -99,6 +99,77 @@ export const AuthProvider = ({ children }) => {
         }
     }, [])
 
+    const createDiscussion = async (data) => {
+        const id = data.id;
+        const title = data.title;
+        const description = data.description;
+        const message = description.replace(/\n/g, '<br>');
+        console.log(message);
+        const user = data.user;
+        const tag = data.tag;
+        const statut = data.statut;
+
+        let id_discussion
+
+        try{
+            const response = await fetch('http://localhost:6958/createDiscussion?id='+id+'&title='+title+'&statut='+statut);
+            const res = await response.json();
+            if(res.data){
+                id_discussion = res.data;
+            }
+            else{
+                throw new Error(res.err);
+            }
+            }
+        catch(e){
+            console.error(e);
+            return;
+        }
+        try{
+            const response = await fetch('http://localhost:6958/addMessage?id='+id+'&id_discussion='+id_discussion+'&message='+message);
+            const res = await response.json();
+            if(res.data){
+            }
+            else{
+                throw new Error(res.err);
+            }
+            }
+        catch(e){
+            console.error(e);
+            return;
+        }
+
+        try{
+            const response = await fetch('http://localhost:6958/addParticipant?id='+id+'&id_discussion='+id_discussion+'&participants='+user);
+            const res = await response.json();
+            if(res.data){
+            }
+            else{
+                throw new Error(res.err);
+            }
+            }
+        catch(e){
+            console.error(e);
+            return;
+        }
+
+        try{
+            const response = await fetch('http://localhost:6958/addTag?id_discussion='+id_discussion+'&tag='+tag);
+            const res = await response.json();
+            if(res.data){
+            }
+            else{
+                throw new Error(res.err);
+            }
+            }
+        catch(e){
+            console.error(e);
+            return;
+        }
+
+        navigate('/discussion', {state: {id: id_discussion}});
+    }
+
     const logoutAction = () => {
         setName(null);
         setFirstName(null);
@@ -111,7 +182,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     return (
-        <AuthContext.Provider value={{name, firstName, email, token, id, isAdmin, loginAction, registerAction, verifToken, logoutAction}}>
+        <AuthContext.Provider value={{name, firstName, email, token, id, isAdmin, loginAction, registerAction, createDiscussion, verifToken, logoutAction}}>
             {children}
         </AuthContext.Provider>
     );
@@ -121,4 +192,3 @@ export const AuthProvider = ({ children }) => {
 export const useAuth = () => {
     return useContext(AuthContext);
 };
-

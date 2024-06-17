@@ -54,7 +54,14 @@ export default function SearchforMulti({title, ph, data, setData, search, setSea
     return (
     <>  
         <div className={'form-'+title+'-selected'}>
-            <button type="button" className={'form-'+title+'-button'} onClick={() => {setStyleSelected({display:'block'})}} onMouseEnter={()=>{setHoverSelected(true)}} onMouseLeave={()=>{setHoverSelected(false)}}>
+            <button type="button" className={'form-'+title+'-button'} onClick={() => {setStyleSelected({display:'block'});
+            if(!isMulti){
+                if(selected.length !== 0){
+                    setData([...data, selected[0]]);
+                    setSelected([]);
+                }
+            }
+        }} onMouseEnter={()=>{setHoverSelected(true)}} onMouseLeave={()=>{setHoverSelected(false)}}>
                 {
                     isMulti ? 'Selectioné(s)' :  holder
                 }
@@ -80,7 +87,9 @@ export default function SearchforMulti({title, ph, data, setData, search, setSea
                                 setSelected([...selected, item]);
                                 setData(data.filter((data) => data.value !== item.value));
                             }else{
-                                setData([...selected, ...data]);
+                                if(selected.length !== 0){
+                                    return
+                                }
                                 setSelected([item]);
                                 setData(data.filter((data) => data.value !== item.value));
                             }
@@ -89,7 +98,8 @@ export default function SearchforMulti({title, ph, data, setData, search, setSea
                         </div>
                 })}
             </div>
-            {allowAll ? <button type="button" className={'form-'+title+'-button-all'} onClick={() => {
+            {allowAll ? <button type="button" className={'form-'+title+'-button-all'} style={
+                data.length === 0 ? {backgroundColor:'#14A33A'} : {backgroundColor:'#FFFFFF'}} onClick={() => {
                     if(data.length === 0){
                         setData([...selected, ...data]);
                         setSelected([]);

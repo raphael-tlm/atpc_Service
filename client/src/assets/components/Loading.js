@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from 'react'
 import FadeLoader from 'react-spinners/FadeLoader';
 
 export default function Loading({overideStyle = false}) {

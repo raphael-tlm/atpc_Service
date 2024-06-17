@@ -4,9 +4,9 @@ export default function Navigation({nav}) {
   function Todo() {
     return (
       <div className={'nav-group'}>
-        <a href={'/nouvelle-todo'}>Nouveau TODO</a>
-        <a href={'/liste-todo'}>Liste TODO</a>
-        <a href={'/todogestion'}>Gérer TODO</a>
+        <a href={'/nouvelle-todo'} className='bg-color-blue'>Nouveau TODO</a>
+        <a href={'/liste-todo'} className='bg-color-blue'>Liste TODO</a>
+        <a href={'/todogestion'} className='bg-color-blue'>Gérer TODO</a>
       </div>
     )
   }
