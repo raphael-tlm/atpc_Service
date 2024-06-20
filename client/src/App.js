@@ -11,26 +11,31 @@ import ListDiscussion from './pages/ListDiscussion.js';
 
 import './app.css';
 
+
 import { useEffect, useState } from 'react';
 import Loading from './assets/components/Loading.js';
 import PrivateRoute from './assets/components/custom/router/route.js';
 
 function App() {
 
-  const [overideStyle, setOverideStyle] = useState()
+  const [hide, setHide] = useState(false)
+  const [overideStyle, setOverideStyle] = useState({})
 
   useEffect(() => {
     const load = () => {
-      setOverideStyle({
-        display: 'none'
-    })
+      setHide(true)
+
+      setTimeout(() => {
+        setOverideStyle({display: 'none'})
+      },500);
   }
    
   load();
   }, [window]);
 
-
   return (
+    <>
+    <Loading hide={hide} overideStyle={overideStyle}/>
       <Router>
         <AuthProvider>
           <Routes>
@@ -50,8 +55,8 @@ function App() {
             </Route>
           </Routes>
         </AuthProvider>
-      <Loading overideStyle={overideStyle}/>
       </Router>
+      </>
   );
 }
 

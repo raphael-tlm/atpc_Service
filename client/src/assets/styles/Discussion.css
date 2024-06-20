@@ -1,0 +1,62 @@
+.page-discussion-content{
+    display: flex;
+    flex-direction: column;
+
+    height: 100vh;
+    width: 85%;
+
+
+}
+
+.page-discussion-content-message * {
+    white-space: pre-line;
+}
+
+.page-discussion-content h1{
+    font-size: 2.5rem;
+    margin: 20px 0 0 20px;
+    padding: 20px;
+
+    color: #333;
+
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.page-discussion-content-message{
+    display: flex;
+    flex-direction: column;
+
+    height: 100%;
+    width: 100%;
+
+    overflow-y: auto;
+}
+
+.page-discussion-content-message .message{
+    display: flex;
+    flex-direction: column;
+
+    margin: 5px 20px 0 20px;
+    padding: 20px;
+
+    width: fit-content;
+    max-width: 50%;
+
+    background-color: #f0f0f0;
+    border-radius: 10px;
+}
+
+.page-discussion-content-message .name{
+    font-size: 1.5rem;
+    margin: 0 20px 0 20px;
+    font-weight: bold;
+    color: #333;
+}
+
+.page-discussion-content-message .left{
+    align-self: flex-start;
+}
+
+.page-discussion-content-message .right{
+    align-self: flex-end;
+}

@@ -7,14 +7,9 @@ const { Server } = require('socket.io');
 
 const app = express();
 app.use(cors());
-const server = http.createServer(app);
-const io = new Server(server, {
-    path: '/socket.io',
-    cors: {
-        origin: '*',
-        methods: ['GET', 'POST']
-    }
-});
+
+
+// --------------------------------------------------------------------------------------------
 
 const secret = '6d5s4v98ds4v65ds1v984fe65v51e98r4b65f4695f4de';
 
@@ -53,7 +48,6 @@ function login(connection, mail, password, res)
             return;
         }
         if (jwt.decode(result[0].Mot_De_Passe).password !== password){
-            console.log(jwt.decode(result[0].Mot_De_Passe));
             res.send({err : 'Mot de passe incorrect'});
             return;
         }
@@ -332,6 +326,7 @@ app.get('/addTag', (req, res) => {
 // --------------------------------------------------------------------------------------------
 
 function getDiscussion(connection, req, res){
+    let users = []
     const id = req.query.id;
     const query = `SELECT * FROM discussion WHERE Id_Discussion = ?`;
     connection.query(query, [id], (err, result) => {
@@ -339,7 +334,24 @@ function getDiscussion(connection, req, res){
             console.log(err);res.send({err: 'Erreur serveur'})
             return;
         }
-        const query = `SELECT Id_Utilisateur, Contenu FROM message WHERE Id_Discussion = ?`;
+        const query = `SELECT 
+    m.Id_Message,
+    m.Id_Discussion,
+    m.Id_Utilisateur,
+    m.Contenu,
+    dv.Id_Discussion AS DernierVue_Id_Discussion,
+    dv.Id_Utilisateur AS DernierVue_Id_Utilisateur,
+    dv.Id_Message AS DernierVue_Id_Message
+FROM 
+    atpc_services.message m
+LEFT JOIN 
+    atpc_services.derniervue dv
+ON 
+    m.Id_Discussion = dv.Id_Discussion 
+    AND m.Id_Message = dv.Id_Message
+WHERE 
+    m.Id_Discussion = ?
+ORDER BY m.Id_Message ASC`;
         connection.query(query, [id], (err, messages) => {
             if(err){
                 console.log(err);res.send({err: 'Erreur serveur'})
@@ -351,7 +363,19 @@ function getDiscussion(connection, req, res){
                     console.log(err);res.send({err: 'Erreur serveur'})
                     return;
                 }
-                res.send({data: {Title: result[0].Titre, Statut: result[0].Statut, Messages: JSON.stringify(messages), Participants: JSON.stringify(participants)}});
+                participants.forEach((participant, key) => {
+                    const query = `SELECT Id_Utilisateur, Nom, Prenom FROM utilisateurs WHERE Id_Utilisateur = ?`;
+                    connection.query(query, [participant.Id_Utilisateur], (err, user) => {
+                        if(err){
+                            console.log(err);res.send({err: 'Erreur serveur'})
+                            return;
+                        }
+                        users.push(user[0]);
+                        if(key+1 === participants.length){
+                            res.send({data: {Title: result[0].Titre, Statut: result[0].Statut, Messages: JSON.stringify(messages), Participants: JSON.stringify(participants), User: JSON.stringify(users)}});
+                        }
+                    });
+                });
             });
         });
     });
@@ -451,9 +475,25 @@ app.get('/getallDiscussion', (req, res) => {
     }
 });
 
+// --------------------------------------------------------------------------------------------
 
 
-app.listen(6958, () => {
-    console.log('Server started on http://localhost:6958');
+const server = http.createServer(app);
+const io = new Server(server, {
+    path: '/socket.io',
+    cors: {
+        origin: '*',
+        methods: ['GET', 'POST']
+    }
 });
 
+io.on('connection', (socket) => {
+    socket.on('newMessage', (data) => {
+        socket.broadcast.emit('newMessage', data);
+    });
+}
+);
+
+server.listen(6958, () => {
+    console.log('Server started on http://localhost:6958');
+});

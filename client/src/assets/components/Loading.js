@@ -1,24 +1,9 @@
 import FadeLoader from 'react-spinners/FadeLoader';
 
-export default function Loading({overideStyle = false}) {
-
-    const style = {
-        position: 'absolute',
-        zIndex: '1000',
-        top: '0',
-        left: '0',
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'rgba(0, 0, 0, 1)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        color: 'white',
-        fontSize: '2em'
-    }
+export default function Loading({hide, overideStyle = {}}) {
 
     return (
-        <div style={overideStyle ? overideStyle : style}>
+        <div className={hide ? 'loading hide' : 'loading' } style={overideStyle == {} ? null : overideStyle}>
             <FadeLoader color='white' loading={true} size={150} />
         </div>
     )
