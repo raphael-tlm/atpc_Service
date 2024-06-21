@@ -104,7 +104,6 @@ export const AuthProvider = ({ children }) => {
         const title = data.title;
         const description = data.description;
         const message = description.replace(/\n/g, '<br>');
-        console.log(message);
         const user = data.user;
         const tag = data.tag;
         const statut = data.statut;
@@ -181,8 +180,33 @@ export const AuthProvider = ({ children }) => {
         navigate('/connexion');
     }
 
+    const update = (label, data, id) => {
+        fetch('http://localhost:6958/update?label='+label+'&data='+data+'&id='+id)
+        .then(response => response.json())
+        .then(data => {
+            if(data.err){
+                console.log(data.err);
+                return;
+            }
+            setName(data.data);
+            alert('Correctement Modifié');
+        })
+    }
+
+    const updatePass = (data, id) => {
+        fetch('http://localhost:6958/updatePass?data='+data+'&id='+id)
+        .then(response => response.json())
+        .then(data => {
+            if(data.err){
+                console.log(data.err);
+                return;
+            }
+            alert('Correctement Modifié');
+        })
+    }
+
     return (
-        <AuthContext.Provider value={{name, firstName, email, token, id, isAdmin, loginAction, registerAction, createDiscussion, verifToken, logoutAction}}>
+        <AuthContext.Provider value={{update, updatePass, name, setName, firstName, setFirstName, email, setEmail, token, id, isAdmin, loginAction, registerAction, createDiscussion, verifToken, logoutAction}}>
             {children}
         </AuthContext.Provider>
     );

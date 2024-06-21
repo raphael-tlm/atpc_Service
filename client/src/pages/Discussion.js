@@ -49,7 +49,7 @@ export default function Discussion() {
           isInclude = true;
         }
       });
-      if(!isInclude) window.location.href = '/';
+      if(!isInclude && auth.isAdmin == false) window.location.href = '/';
     }
   }, [participants])
 
@@ -66,7 +66,7 @@ export default function Discussion() {
     setMessage('');
 
     socket.emit('newMessage', {id: auth.id, message: message, id_discussion: location.state.id});
-
+    newRe();
     scrollToBottom();
   }
 
@@ -74,28 +74,58 @@ export default function Discussion() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const newRe = () => {
+    const divref = document.querySelector('.ref');
+    if(divref){
+      document.querySelector('.page-discussion-content-message').append(divref)
+    }
+    else{
+      const div = document.createElement('div');
+      div.className = 'ref';
+      div.ref=messagesEndRef;
+      document.querySelector('.page-discussion-content-message').append(div);
+    }
+    updatelastread();
+  }
+
+
   useEffect(()=>{
     socket.on('newMessage', (data) => {
       if(data.id_discussion === location.state.id){
         setMessages([...messages, {Id_Utilisateur: data.id, Contenu: data.message}]);
+        newRe();
         scrollToBottom();
       }
     })
+
   },[messages]);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
+  const updatelastread = async () => {
+    const res = await fetch('http://localhost:6958/updateLastRead?id_discussion='+location.state.id+'&id='+auth.id);
+    const data = await res.json();
+    if(data.err){
+      console.log(data.err);
+      return;
+    }
+  }
+
+  console.log(user)
+
   const messagesEndRef = useRef(null);
   return (
     <HandlePage title="discussion" nav={auth}>
-        <div><a href='/liste-discussion'>{"<"}</a><h1>{title}</h1></div>
+        <h1>{title}</h1>
         <div className='page-discussion-content-message'>
           <MessageList data={messages} users={user} id={auth.id} refpointer={messagesEndRef}/>
         </div>
-        { state === 1 ? <><InputForm title='discussion' placeholder='Message' data={message} setData={setMessage} onChange={setMessage} />
-        <button onClick={handleSubmit}>Envoyer</button></> : null}
+        <div className='page-discussion-content-input'>
+        { state === 1 || auth.isAdmin ? <><InputForm title='discussion' placeholder='Message' data={message} setData={setMessage} onChange={setMessage} />
+        <button className='button-discussion' onClick={handleSubmit}>›</button></> : null}
+        </div>
     </HandlePage>
   )
 }

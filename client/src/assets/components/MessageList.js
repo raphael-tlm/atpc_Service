@@ -2,9 +2,8 @@ import React from 'react'
 import { useState } from 'react';
 
 export default function MessageList({data, users, id, refpointer}) {
-    const [lastreadset, setLastreadset] = useState(false);
 
-    function messages(key, content, id, uid, name = null, read=null) {
+    function messages(key, content, id, uid, name = null, read) {
         let side = id==uid ? 'right' : 'left';
         const theMessage = () =>{
             return (
@@ -16,18 +15,22 @@ export default function MessageList({data, users, id, refpointer}) {
                 </>
             )
         }
-        if(read == uid && !lastreadset){
-            console.log('last read set');
-            console.log(content)
-            setLastreadset(true);
+        const theMessageRead = () =>{
             return (
                 <>
-                {theMessage()}
-                <div ref={refpointer}></div>
+                <div ref={refpointer} className='ref'/>
+                {name ? <div className={'name '+side}>{name}</div> : ''}
+                <div data-index={key} className={'message '+side}>
+                    <div className='content'>{content}</div>
+                </div>
                 </>
             )
         }
-        else{
+
+        if (read == uid) {
+            return theMessageRead();
+        }
+        else if (read == null) {
             return theMessage();
         }
     }
@@ -41,8 +44,8 @@ export default function MessageList({data, users, id, refpointer}) {
                 }
                 else{
                     const user = users.find(user => user.Id_Utilisateur === message.Id_Utilisateur);
-                    if (data[index-1].Id_Utilisateur === message.Id_Utilisateur) {
-                        return messages(index, message.Contenu.replaceAll('<br>', ' \n ').replaceAll('\\n', '\n'), message.Id_Utilisateur, id, null, message.read);
+                    if (message.Id_Utilisateur === data[index-1].Id_Utilisateur && message.DernierVue_Id_Utilisateur === data[index-1].DernierVue_Id_Utilisateur || message.DernierVue_Id_Utilisateur === message.Id_Utilisateur) {
+                        return messages(index, message.Contenu.replaceAll('<br>', ' \n ').replaceAll('\\n', '\n'), message.Id_Utilisateur, id, null, message.DernierVue_Id_Utilisateur);
                     }
                     return messages(index, message.Contenu.replaceAll('<br>', ' \n ').replaceAll('\\n', '\n'), message.Id_Utilisateur, id, user.Prenom+' '+user.Nom, message.DernierVue_Id_Utilisateur);
                 }

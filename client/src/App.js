@@ -4,10 +4,12 @@ import {AuthProvider} from './assets/components/custom/hooks/AuthProvider.js';
 
 import Home from './pages/Home.js';
 import Login from './pages/Login.js';
+import Profil from './pages/Profil.js';
 import Register from './pages/Register.js';
 import Discussion from './pages/Discussion.js';
 import NewDiscussion from './pages/NewDiscussion.js';
 import ListDiscussion from './pages/ListDiscussion.js';
+import CloseDiscussion from './pages/CloseDiscussion.js';
 
 import './app.css';
 
@@ -52,6 +54,12 @@ function App() {
             </Route>
             <Route element={<PrivateRoute />}>
               <Route path="liste-discussion" element={<ListDiscussion />}/>
+            </Route>
+            <Route element={<PrivateRoute />}>
+              <Route path="close-discussion" element={<CloseDiscussion />}/>
+            </Route>
+            <Route element={<PrivateRoute />}>
+              <Route path="profil" element={<Profil />}/>
             </Route>
           </Routes>
         </AuthProvider>

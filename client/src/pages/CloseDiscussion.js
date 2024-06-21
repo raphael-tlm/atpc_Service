@@ -17,18 +17,17 @@ export default function ListDiscussion() {
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await fetch('http://localhost:6958/getallDiscussion?id='+auth.id+'&isAdmin='+auth.isAdmin);
+            const res = await fetch('http://localhost:6958/getallDiscussion?id='+auth.id);
             const data = await res.json();
             if(data.err){
                 console.log(data.err);
                 return;
             }
-            setList(data.data.filter((discussion) => {return discussion.Statut !== 2}).map((discussion) => {
+            setList(data.data.filter((discussion) => {return discussion.Statut == 2}).map((discussion) => {
                 return {
                     Id_Discussion: discussion.Id_Discussion,
                     Title: discussion.Title,
                     Tag: discussion.Tag,
-                    Statut: discussion.lStatut,
                     Auteur: discussion.Auteur,
                     Date_Ouverture: new Date(discussion.Date_Ouverture).getDate() + '/' + (new Date(discussion.Date_Ouverture).getMonth() + 1) + '/' + new Date(discussion.Date_Ouverture).getFullYear() + ' ' + new Date(discussion.Date_Ouverture).getHours() + ':' + new Date(discussion.Date_Ouverture).getMinutes()
                 }
@@ -64,11 +63,6 @@ export default function ListDiscussion() {
                                     return a.Tag.localeCompare(b.Tag);
                                 })])
                             }}>Tag</th>
-                            <th onClick={() => {
-                                setSearchList([...searchList.sort((a, b) => {
-                                    return a.Statut.localeCompare(b.Statut);
-                                })])
-                            }}>Statut</th>
                                 <th onClick={() => {
                                     setSearchList([...searchList.sort((a, b) => {
                                         return a.Auteur.localeCompare(b.Auteur);
@@ -89,7 +83,6 @@ export default function ListDiscussion() {
                                 });}}>
                                     <td>{discussion.Title}</td>
                                     <td>{discussion.Tag}</td>
-                                    <td>{discussion.Statut}</td>
                                     <td>{discussion.Auteur}</td>
                                     <td>{discussion.Date_Ouverture}</td>
                                 </tr>

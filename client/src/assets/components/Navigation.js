@@ -28,7 +28,7 @@ export default function Navigation({nav}) {
           <Div>
             <a href={'/nouvelle-discussion'} className='bg-color-blue'>Nouvelle Discussion</a>
             <a href={'/liste-discussion'} className='bg-color-blue'>Liste Discussions</a>
-            <a href={'/discussion'} className='bg-color-blue' >Discussions Fermée</a>
+            <a href={'/close-discussion'} className='bg-color-blue' >Discussions Fermée</a>
           </Div>
           {nav.isAdmin ? <Todo /> : null}
           <a href={'/profil'} className='bg-color-white'>Profil</a>

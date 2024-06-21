@@ -5,7 +5,6 @@ import InputForm from '../assets/components/InputForm';
 import Search from '../assets/components/SearchforMulti';
 
 import './../assets/styles/Newdiscussion.css'
-import { Navigate } from 'react-router-dom';
 
 export default function Newiscussion() {
     const auth = useAuth();
