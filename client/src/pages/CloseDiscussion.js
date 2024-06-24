@@ -17,7 +17,7 @@ export default function ListDiscussion() {
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await fetch('http://localhost:6958/getallDiscussion?id='+auth.id);
+            const res = await fetch('http://localhost:6958/getallDiscussion?id='+auth.id+'&isAdmin='+auth.isAdmin);
             const data = await res.json();
             if(data.err){
                 console.log(data.err);

@@ -10,7 +10,34 @@ export const AuthProvider = ({ children }) => {
     const [email, setEmail] = useState(null);
     const [token, setToken] = useState(localStorage.getItem('token') ||'');
     const [id, setId] = useState(null);
-    const [isAdmin, setIsAdmin] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(null);
+
+    useEffect(() => {
+        const getInfo = async () => {
+            try{
+                const response = await fetch('http://localhost:6958/TryGetInfo?token='+localStorage.getItem('token'));
+                const res = await response.json();
+                if(res.data){
+                    setName(res.data.name);
+                    setFirstName(res.data.firstName);
+                    setEmail(res.data.email);
+                    setId(res.data.id);
+                    setIsAdmin(res.data.isAdmin);
+                    return;
+                }
+                throw new Error(res.err);
+                }
+            catch(e){
+                console.error(e);
+                navigate('/connexion');
+            }
+        }
+        
+
+        if(localStorage.getItem('token')){
+            getInfo();
+        }
+    }, []);
 
     const navigate = useNavigate();
     const loginAction = async (data) => {
@@ -71,33 +98,6 @@ export const AuthProvider = ({ children }) => {
             console.error(e);
         }
     }
-
-    useEffect(() => {
-        const getInfo = async () => {
-            try{
-                const response = await fetch('http://localhost:6958/TryGetInfo?token='+localStorage.getItem('token'));
-                const res = await response.json();
-                if(res.data){
-                    setName(res.data.name);
-                    setFirstName(res.data.firstName);
-                    setEmail(res.data.email);
-                    setId(res.data.id);
-                    setIsAdmin(res.data.isAdmin);
-                    return;
-                }
-                throw new Error(res.err);
-                }
-            catch(e){
-                console.error(e);
-                navigate('/connexion');
-            }
-        }
-        
-
-        if(localStorage.getItem('token')){
-            getInfo();
-        }
-    }, [])
 
     const createDiscussion = async (data) => {
         const id = data.id;

@@ -112,18 +112,28 @@ export default function Discussion() {
       return;
     }
   }
-
-  console.log(user)
+  
+  const closeDiscussion = async (id) => {
+    if(window.confirm('Voulez-vous vraiment fermer la discussion ?')){
+      const res = await fetch('http://localhost:6958/closeDiscussion?id='+id);
+      const data = await res.json();
+      if(data.err){
+        console.log(data.err);
+        return;
+      }
+      window.location.href = '/';
+    }
+  }
 
   const messagesEndRef = useRef(null);
   return (
     <HandlePage title="discussion" nav={auth}>
-        <h1>{title}</h1>
+      <div><button className='close-discussion' onClick={() =>{closeDiscussion(location.state.id)}}>Fermer la discussion</button><h1>{title}</h1></div>
         <div className='page-discussion-content-message'>
           <MessageList data={messages} users={user} id={auth.id} refpointer={messagesEndRef}/>
         </div>
         <div className='page-discussion-content-input'>
-        { state === 1 || auth.isAdmin ? <><InputForm title='discussion' placeholder='Message' data={message} setData={setMessage} onChange={setMessage} />
+        { state !== 2 && (state === 1 || auth.isAdmin) ? <><InputForm title='discussion' placeholder='Message' data={message} setData={setMessage} onChange={setMessage} />
         <button className='button-discussion' onClick={handleSubmit}>›</button></> : null}
         </div>
     </HandlePage>

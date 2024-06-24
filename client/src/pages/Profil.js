@@ -1,36 +1,41 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import HandlePage from '../assets/components/HandlePage'
 import { useAuth } from '../assets/components/custom/hooks/AuthProvider';
-import LabelEdit from '../assets/components/LabelEdit';
+import InputForm from '../assets/components/InputForm';
+
+import '../assets/styles/Profil.css';
 
 export default function Profil() {
     const auth = useAuth();
+
+    const [name, setName] = useState('');
+    const [firstName, setFirstName] = useState('');
 
     const [pass, setPass] = useState('');
     const [newPass, setNewPass] = useState('');
 
   return (
-    <HandlePage title="Profil" nav={auth}>
-        <h1>Profil</h1>
+    <HandlePage title="profil" nav={auth}>
+        <div className="profil-title">Vous êtes {auth.name} {auth.firstName}</div>
         <div className="profil">
             <div className="profil-info">
                 <div className="profil-info-item">
-                    <LabelEdit label="Nom : " data={auth.name} setData={(e) => {auth.setName(e.target.value)}} />
-                    <button onClick={() => {auth.update('Nom', auth.name, auth.id)}}>✓</button>
+                    <InputForm title="profil" type='text' name='nom' label="Nom : " placeholder='...' data={name} setData={setName} />
+                    <button className='button-profil' onClick={() => {auth.update('Nom', name, auth.id)}}>✓</button>
                 </div>
                 <div className="profil-info-item">
-                    <LabelEdit label="Prenom : " data={auth.firstName} setData={(e) => {auth.setFirstName(e.target.value)}} />
-                    <button onClick={() => {auth.updateName(auth.name, auth.id)}}>✓</button>
+                    <InputForm title="profil" type='text' name='prenom' label="Prénom : " placeholder='...' data={firstName} setData={setFirstName} />
+                    <button className='button-profil' onClick={() => {auth.update("Prenom", firstName, auth.id)}}>✓</button>
                 </div>
                 <div className="profil-info-item">
-                    <LabelEdit label="EMail : " data={auth.email} setData={(e) => {auth.setEmail(e.target.value)}} />
-                    <button onClick={() => {auth.updateName(auth.mail, auth.id)}}>✓</button>
+                    <InputForm title="profil"type='text' label="EMail : " data={auth.email} setData={auth.setEmail} />
+                    <button className='button-profil' onClick={() => {auth.update("Email", auth.mail, auth.id)}}>✓</button>
                 </div>
             </div>
             <div className="profil-pass">
-                <LabelEdit label="Mot de passe : " data={pass} setData={(e) => {setPass(e.target.value)}} hide />
-                <LabelEdit label="Re-écrivez le mot de passe : " data={newPass} setData={(e) => {setNewPass(e.target.value)}} hide/>
-                <button onClick={() => {if(pass !== newPass){
+                <InputForm title="pass" type='text'label="Mot de passe : " data={pass} setData={setPass}/>
+                <InputForm title="pass" type='password'label="Re-écrivez le mot de passe : " data={newPass} setData={setNewPass}/>
+                <button className='button-pass' onClick={() => {if(pass !== newPass){
                     alert('Les mots de passe ne correspondent pas');
                     return;
                 }else{

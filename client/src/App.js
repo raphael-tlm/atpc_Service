@@ -6,6 +6,7 @@ import Home from './pages/Home.js';
 import Login from './pages/Login.js';
 import Profil from './pages/Profil.js';
 import Register from './pages/Register.js';
+import ListTodo from './pages/ListTodo.js';
 import Discussion from './pages/Discussion.js';
 import NewDiscussion from './pages/NewDiscussion.js';
 import ListDiscussion from './pages/ListDiscussion.js';
@@ -60,6 +61,8 @@ function App() {
             </Route>
             <Route element={<PrivateRoute />}>
               <Route path="profil" element={<Profil />}/>
+            </Route><Route element={<PrivateRoute />}>
+              <Route path="liste-todo" element={<ListTodo />}/>
             </Route>
           </Routes>
         </AuthProvider>

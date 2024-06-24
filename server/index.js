@@ -562,13 +562,32 @@ function updateLastRead(connection, req, res){
             console.log(err);res.send({err: 'Erreur serveur'})
             return;
         }
-        const query = `UPDATE derniervue SET Id_Message = ? WHERE Id_Discussion = ? AND Id_Utilisateur = ?`;
-        connection.query(query, [result[0].Id_Message, id_discussion, id], (err, result) => {
+        const query = `SELECT Id_DernierVue FROM derniervue WHERE Id_Discussion = ? AND Id_Utilisateur = ?`;
+        connection.query(query, [id_discussion, id], (err, result2) => {
             if(err){
                 console.log(err);res.send({err: 'Erreur serveur'})
                 return;
             }
-            res.send({data: 'Dernier message lu'});
+            if(result2.length === 0){
+                const query = `INSERT INTO derniervue(Id_Discussion, Id_Utilisateur, Id_Message) VALUES (?, ?, ?)`;
+                connection.query(query, [id_discussion, id, result[0].Id_Message], (err, result) => {
+                    if(err){
+                        console.log(err);res.send({err: 'Erreur serveur'})
+                        return;
+                    }
+                    res.send({data: 'Correctement modifié'});
+                });
+            }
+            else{
+                const query = `UPDATE derniervue SET Id_Message = ? WHERE Id_Discussion = ? AND Id_Utilisateur = ?`;
+                connection.query(query, [result[0].Id_Message, result2[0].Id_DernierVue], (err, result) => {
+                    if(err){
+                        console.log(err);res.send({err: 'Erreur serveur'})
+                        return;
+                    }
+                    res.send({data: 'Correctement modifié'});
+                });
+            }
         });
     });
 }
@@ -637,6 +656,28 @@ app.get('/updatePass', (req, res) => {
 });
 
 // --------------------------------------------------------------------------------------------
+
+function closeDiscussion(connection, req, res){
+    const id = req.query.id;
+    const query = `UPDATE discussion SET Statut = 2 WHERE Id_Discussion = ?`;
+    connection.query(query, [id], (err, result) => {
+        if(err){
+            console.log(err);res.send({err: 'Erreur serveur'})
+            return;
+        }
+        res.send({data: 'Discussion fermée'});
+    });
+}
+
+app.get('/closeDiscussion', (req, res) => {
+    try{
+        closeDiscussion(connection, req, res);
+    }
+    catch(e){
+        console.log(e);
+        console.log(err);res.send({err: 'Erreur serveur'})
+    }
+});
 
 const server = http.createServer(app);
 const io = new Server(server, {
